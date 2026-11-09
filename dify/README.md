@@ -56,6 +56,22 @@ seekdb 在这里**不是** Dify 自身的元数据库，而是**应用的数据�
 
 ## 4. 从零跑起来（约 10 分钟）
 
+> **没有 Docker 也能跑。** 4.1 + 4.3 可以用一条命令替代（用官方 `pylibseekdb` 在进程内起 seekdb）：
+>
+> ```bash
+> cd memory_service
+> pip install pylibseekdb pymysql
+> python3 dev_embedded.py        # 嵌入式 seekdb + 记忆服务，监听 0.0.0.0:8000
+> ```
+>
+> 若 Dify 在云端（不在本机），再开一个终端把 8000 暴露到公网：
+>
+> ```bash
+> ./dev_stack.sh                 # 会自动建隧道、打印公网地址，并回填 dsl/innkeeper-chatflow-test.yml
+> ```
+>
+> 然后把 Dify 两个 HTTP 节点改成脚本打印的 `https://xxxx.lhr.life` 地址。这条路只用于本地验证，正式提测仍建议按 4.1–4.3 的 seekdb 部署方式。
+
 ### 4.1 启动 seekdb
 
 ```bash
@@ -150,6 +166,8 @@ dify/
 │   ├── server.py                   # 记忆服务（HTTP → seekdb）
 │   ├── schema.sql                  # 建库建表
 │   ├── selftest.py                 # 6 项自检，含 seekdb 读写验证
+│   ├── dev_embedded.py             # 无 Docker：进程内起 seekdb + 服务
+│   ├── dev_stack.sh                # 无 Docker + Dify 云端：一键起栈并开公网隧道
 │   └── requirements.txt            # pymysql
 ├── evidence/seekdb_selftest.log    # 自检实际输出（seekdb 1.4.0）
 └── validation_samples.md           # 验证样例与预期表现
